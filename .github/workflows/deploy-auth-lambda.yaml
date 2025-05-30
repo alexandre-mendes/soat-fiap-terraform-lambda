@@ -30,7 +30,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        working-directory: lambda-auth
+        working-directory: soat-fiap-terraform-lambda
         run: npm install
 
       - name: Zip Lambda
