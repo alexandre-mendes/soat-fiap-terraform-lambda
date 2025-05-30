@@ -34,8 +34,7 @@ jobs:
 
       - name: Zip Lambda
         run: |
-          cd lambda-auth
-          zip -r ../infra/lambda-auth.zip .
+          zip -r /terraform/lambda-auth.zip .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
