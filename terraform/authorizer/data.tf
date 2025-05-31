@@ -2,11 +2,11 @@ data "aws_vpc" "vpc" {
   cidr_block = "172.31.0.0/16"
 }
 
-data "aws_subnets" "subnets"{
-    filter {
-        name = "vpc-id"
-        values = [data.aws_vpc.vpc.id]
-    }
+data "aws_subnets" "subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.vpc.id]
+  }
 }
 
 data "aws_subnet" "subnet" {
@@ -15,7 +15,7 @@ data "aws_subnet" "subnet" {
 }
 
 data "aws_security_group" "vpc_link_sg" {
-  name   =  "SG-${var.project_name}"
+  name   = "SG-${var.project_name}"
   vpc_id = ""
 }
 
