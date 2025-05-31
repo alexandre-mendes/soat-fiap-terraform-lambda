@@ -29,6 +29,11 @@ jobs:
         run: |
           zip -r ../../terraform/authenticator/lambda-authenticator.zip .
 
+      - name: Zip Lambda
+        working-directory: lambda/authorizer
+        run: |
+          zip -r ../../terraform/authenticator/lambda-authorizer.zip .
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
