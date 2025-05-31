@@ -22,3 +22,9 @@ data "aws_security_group" "vpc_link_sg" {
 data "aws_lb" "fastfood_nlb" {
   name = "a668ea5c53a6046f4aefaccc20bde6ca"
 }
+
+data "aws_lb_listener" "fastfood_nlb_listener" {
+  load_balancer_arn = data.aws_lb.fastfood_nlb.arn
+  port              = 80
+}
+
