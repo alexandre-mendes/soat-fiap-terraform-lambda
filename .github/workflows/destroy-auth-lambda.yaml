@@ -3,12 +3,15 @@ name: Terraform Destroy - Lambda
 on:
   workflow_dispatch:
 
-env:
-  REGION_DEFAULT: us-east-1
-
 jobs:
   destroy:
     runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-1
+      TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+      TF_VAR_clients_table_name: "clientes"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,27 +22,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.REGION_DEFAULT }}
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Zip Lambda
+        working-directory: lambda/authenticator
         run: |
-          zip -r ./terraform/lambda-auth.zip .
+          zip -r ../../terraform/authenticator/lambda-authenticator.zip .
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        working-directory: terraform
+        working-directory: terraform/authenticator
         run: terraform init
 
       - name: Terraform Destroy
-        working-directory: terraform
+        working-directory: terraform/authenticator
         run: terraform destroy -auto-approve

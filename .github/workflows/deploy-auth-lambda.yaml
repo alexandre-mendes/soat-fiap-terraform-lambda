@@ -29,20 +29,42 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: lambda/authenticator/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('lambda/authenticator/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
+        working-directory: lambda/authenticator
         run: npm install
 
       - name: Zip Lambda
+        working-directory: lambda/authenticator
         run: |
-          zip -r ./terraform/lambda-auth.zip .
+          zip -r ../../terraform/authenticator/lambda-authenticator.zip .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Init Terraform
-        working-directory: terraform
+        working-directory: terraform/authenticator
         run: terraform init
 
+      - name: Terraform Format Check
+        working-directory: terraform/authenticator
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: terraform/authenticator
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: terraform/authenticator
+        run: terraform plan -out=tfplan
+
       - name: Apply Terraform
-        working-directory: terraform
+        working-directory: terraform/authenticator
         run: terraform apply -auto-approve

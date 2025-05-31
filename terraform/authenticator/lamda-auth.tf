@@ -1,9 +1,9 @@
-resource "aws_lambda_function" "auth_lambda" {
-  function_name = "authLambda"
-  filename      = "${path.module}/lambda-auth.zip"
+resource "aws_lambda_function" "authenticator_lambda" {
+  function_name = "LambdaAuthenticator"
+  filename      = "${path.module}/lambda-authenticator.zip"
   handler       = "index.handler"
   runtime       = "nodejs18.x"
-  source_code_hash = filebase64sha256("${path.module}/lambda-auth.zip")
+  source_code_hash = filebase64sha256("${path.module}/lambda-authenticator.zip")
   role          = var.existing_lambda_role_arn
 
   environment {
@@ -15,14 +15,14 @@ resource "aws_lambda_function" "auth_lambda" {
 }
 
 resource "aws_apigatewayv2_api" "http_api" {
-  name          = "auth-api"
+  name          = "fastfood-api"
   protocol_type = "HTTP"
 }
 
 resource "aws_lambda_permission" "apigw_invoke" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.auth_lambda.arn
+  function_name = aws_lambda_function.authenticator_lambda.arn
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
 }
@@ -30,7 +30,7 @@ resource "aws_lambda_permission" "apigw_invoke" {
 resource "aws_apigatewayv2_integration" "lambda_integration" {
   api_id             = aws_apigatewayv2_api.http_api.id
   integration_type   = "AWS_PROXY"
-  integration_uri    = aws_lambda_function.auth_lambda.invoke_arn
+  integration_uri    = aws_lambda_function.authenticator_lambda.invoke_arn
   integration_method = "POST"
   payload_format_version = "2.0"
 }

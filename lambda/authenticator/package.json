@@ -1,5 +1,5 @@
 {
-  "name": "lambda-auth",
+  "name": "lambda-authorizer",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -11,10 +11,6 @@
   },
   "author": "Alexandre Mendes da Costa",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/alexandre-mendes/soat-fiap-terraform-lambda/issues"
-  },
-  "homepage": "https://github.com/alexandre-mendes/soat-fiap-terraform-lambda#readme",
   "description": "",
   "dependencies": {
     "aws-sdk": "^2.1692.0",
