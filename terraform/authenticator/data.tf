@@ -18,3 +18,7 @@ data "aws_security_group" "vpc_link_sg" {
   name   = "SG-${var.project_name}"
   vpc_id = ""
 }
+
+data "aws_lb" "fastfood_nlb" {
+  name = "a668ea5c53a6046f4aefaccc20bde6ca"
+}
