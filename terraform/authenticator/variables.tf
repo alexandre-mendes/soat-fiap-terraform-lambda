@@ -15,3 +15,11 @@ variable "existing_lambda_role_arn" {
   description = "ARN da role já existente com permissões para DynamoDB e execução de Lambda"
   default     = "arn:aws:iam::590422439565:role/LabRole"
 }
+
+variable "aws_region" {
+  default = "us-east-1"
+}
+
+variable "project_name" {
+  default = "soat-cluster"
+}
