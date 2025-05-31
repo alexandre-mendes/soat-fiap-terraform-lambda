@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Cache node modules
+      - name: Cache node modules for authenticator
         uses: actions/cache@v3
         with:
           path: lambda/authenticator/node_modules
@@ -37,14 +37,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install dependencies
+      - name: Cache node modules for authorizer
+        uses: actions/cache@v3
+        with:
+          path: lambda/authorizer/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('lambda/authorizer/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies for authenticator
         working-directory: lambda/authenticator
         run: npm install
 
-      - name: Zip Lambda
+      - name: Install dependencies for authorizer
+        working-directory: lambda/authorizer
+        run: npm install
+
+      - name: Zip Lambda authenticator
         working-directory: lambda/authenticator
         run: |
           zip -r ../../terraform/authenticator/lambda-authenticator.zip .
+
+      - name: Zip Lambda authorizer
+        working-directory: lambda/authorizer
+        run: |
+          zip -r ../../terraform/authenticator/lambda-authorizer.zip .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
