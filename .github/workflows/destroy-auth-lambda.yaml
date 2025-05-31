@@ -21,6 +21,18 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.REGION_DEFAULT }}
 
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Zip Lambda
+        run: |
+          zip -r ./terraform/lambda-auth.zip .
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
