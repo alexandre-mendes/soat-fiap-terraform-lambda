@@ -26,10 +26,7 @@ resource "aws_apigatewayv2_authorizer" "lambda_authorizer" {
 resource "aws_apigatewayv2_vpc_link" "fastfood_vpc_link" {
   name = "fastfood-vpc-link"
 
-  subnet_ids = [
-    for subnet in data.aws_subnet.private_subnets :
-    subnet.id if subnet.availability_zone != "${var.aws_region}e"
-  ]
+  subnet_ids = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.aws_region}e"]
 
   security_group_ids = [data.aws_security_group.vpc_link_sg.id]
 }
