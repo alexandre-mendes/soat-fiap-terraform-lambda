@@ -1,0 +1,69 @@
+name: Deploy Authorizer Lambda
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-1
+      TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: lambda/authorizer/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('lambda/authorizer/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: lambda/authorizer
+        run: npm install
+
+      - name: Zip Lambda
+        working-directory: lambda/authorizer
+        run: |
+          zip -r ../../terraform/authorizer/lambda-authorizer.zip .
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Init Terraform
+        working-directory: terraform/authorizer
+        run: terraform init
+
+      - name: Terraform Format Check
+        working-directory: terraform/authorizer
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: terraform/authorizer
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: terraform/authorizer
+        run: terraform plan -out=tfplan
+
+      - name: Apply Terraform
+        working-directory: terraform/authorizer
+        run: terraform apply -auto-approve
