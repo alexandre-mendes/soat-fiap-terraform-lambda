@@ -23,7 +23,7 @@ resource "aws_apigatewayv2_authorizer" "lambda_authorizer" {
   enable_simple_responses          = true
 }
 
-resource "aws_apigatewayv2_vpc_link" "pedido_vpc_link" {
+resource "aws_apigatewayv2_vpc_link" "fastfood_vpc_link" {
   name = "fastfood-vpc-link"
 
   subnet_ids = [
@@ -34,20 +34,20 @@ resource "aws_apigatewayv2_vpc_link" "pedido_vpc_link" {
   security_group_ids = [data.aws_security_group.vpc_link_sg.id]
 }
 
-resource "aws_apigatewayv2_integration" "pedido_integration" {
+resource "aws_apigatewayv2_integration" "fastfood_integration" {
   api_id                = aws_apigatewayv2_api.http_api.id
   integration_type      = "HTTP_PROXY"
   connection_type       = "VPC_LINK"
-  connection_id         = aws_apigatewayv2_vpc_link.pedido_vpc_link.id
+  connection_id         = aws_apigatewayv2_vpc_link.fastfood_vpc_link.id
   integration_method    = "ANY"
-  integration_uri       = "http://${data.aws_lb.pedido_nlb.dns_name}"
+  integration_uri       = "http://${data.aws_lb.fastfood_nlb.dns_name}"
   payload_format_version = "1.0"
 }
 
-resource "aws_apigatewayv2_route" "pedido_route" {
+resource "aws_apigatewayv2_route" "fastfood_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /pedidos"
-  target             = "integrations/${aws_apigatewayv2_integration.pedido_integration.id}"
+  route_key          = "ANY /fastfoods"
+  target             = "integrations/${aws_apigatewayv2_integration.fastfood_integration.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
   authorization_type = "CUSTOM"
 }

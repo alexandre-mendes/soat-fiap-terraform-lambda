@@ -19,6 +19,6 @@ data "aws_security_group" "vpc_link_sg" {
   vpc_id = ""
 }
 
-data "aws_lb" "pedido_nlb" {
-  name = "k8s-pedido-service-<sufixo-gerado-pelo-EKS>" # kubectl get svc -n <namespace> -o wide
+data "aws_lb" "fastfood_nlb" {
+  name = "a668ea5c53a6046f4aefaccc20bde6ca" # kubectl get svc -n <namespace> -o wide
 }
