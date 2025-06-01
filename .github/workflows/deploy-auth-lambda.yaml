@@ -24,6 +24,9 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name soat-cluster --region us-east-1
+
       - name: Get Load Balancer ID from Service DNS
         id: get-lb-id
         run: |
