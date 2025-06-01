@@ -100,7 +100,7 @@ resource "aws_apigatewayv2_integration" "fastfood_integration" {
 
 resource "aws_apigatewayv2_route" "fastfood_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /fastfoods"
+  route_key          = "ANY /fastfoods/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.fastfood_integration.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
   authorization_type = "CUSTOM"
