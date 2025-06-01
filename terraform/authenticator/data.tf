@@ -20,7 +20,7 @@ data "aws_security_group" "vpc_link_sg" {
 }
 
 data "aws_lb" "fastfood_nlb" {
-  name = "${var.load-balancer-id}"
+  name = var.load-balancer-id
 }
 
 data "aws_lb_listener" "fastfood_nlb_listener" {
