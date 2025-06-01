@@ -20,7 +20,7 @@ data "aws_security_group" "vpc_link_sg" {
 }
 
 data "aws_lb" "fastfood_nlb" {
-  name = "a028e502d142b426f8e7fc456db8143d"
+  name = "${var.load-balancer-id}"
 }
 
 data "aws_lb_listener" "fastfood_nlb_listener" {

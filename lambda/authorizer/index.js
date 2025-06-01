@@ -4,7 +4,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.handler = async (event) => {
   try {
-    const token = event.headers?.authorization?.replace('Bearer ', '');
+    const bearerToken = event.headers?.authorization || event.headers?.Authorization
+    const token = bearerToken?.replace('Bearer ', '');
 
     if (!token) {
       return {

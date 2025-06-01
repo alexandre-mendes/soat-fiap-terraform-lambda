@@ -23,3 +23,8 @@ variable "aws_region" {
 variable "project_name" {
   default = "soat-cluster"
 }
+
+variable "load-balancer-id" {
+  type        = string
+  description = "Id do loadbalancer do service fastfood"
+}

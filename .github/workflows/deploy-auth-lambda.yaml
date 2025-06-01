@@ -24,6 +24,15 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Get Load Balancer ID from Service DNS
+        id: get-lb-id
+        run: |
+          FULL_HOST=$(kubectl get svc fastfood-api -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+          LB_ID=$(echo "$FULL_HOST" | cut -d'-' -f1)
+          echo "Full DNS: $FULL_HOST"
+          echo "Extracted ID: $LB_ID"
+          echo "LB_ID=$LB_ID" >> $GITHUB_ENV
+
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
@@ -73,15 +82,23 @@ jobs:
       - name: Terraform Format Check
         working-directory: terraform/authenticator
         run: terraform fmt -check
+        env:
+          TF_VAR_load-balancer-id: ${{ env.LB_ID }}
 
       - name: Terraform Validate
         working-directory: terraform/authenticator
         run: terraform validate
+        env:
+          TF_VAR_load-balancer-id: ${{ env.LB_ID }}
 
       - name: Terraform Plan
         working-directory: terraform/authenticator
         run: terraform plan -out=tfplan
+        env:
+          TF_VAR_load-balancer-id: ${{ env.LB_ID }}
 
       - name: Apply Terraform
         working-directory: terraform/authenticator
         run: terraform apply -auto-approve
+        env:
+          TF_VAR_load-balancer-id: ${{ env.LB_ID }}
