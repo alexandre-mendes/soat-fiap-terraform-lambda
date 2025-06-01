@@ -56,3 +56,5 @@ jobs:
       - name: Terraform Destroy
         working-directory: terraform/authenticator
         run: terraform destroy -auto-approve
+        env:
+          TF_VAR_load-balancer-id: ${{ env.LB_ID }}
