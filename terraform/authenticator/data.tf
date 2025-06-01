@@ -20,7 +20,7 @@ data "aws_security_group" "vpc_link_sg" {
 }
 
 data "aws_lb" "fastfood_nlb" {
-  name = "a668ea5c53a6046f4aefaccc20bde6ca"
+  name = "ab6b7f8bcaa0d4751881aac0e91b5696"
 }
 
 data "aws_lb_listener" "fastfood_nlb_listener" {
