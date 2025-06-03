@@ -7,8 +7,8 @@ const TABLE_NAME = process.env.CLIENTS_TABLE;
 
 exports.handler = async (event) => {
   try {
-    const body = JSON.parse(event.body || '{}');
-    const cpf = body.cpf?.replace(/\D/g, ''); // limpa máscara se vier com pontos
+    const body = event?.body || {};
+    const cpf = body.cpf?.replace(/\D/g, '');
 
     const payload = {
       iat: Math.floor(Date.now() / 1000),
@@ -48,9 +48,12 @@ exports.handler = async (event) => {
 async function findClientByCPF(cpf) {
   const params = {
     TableName: TABLE_NAME,
-    Key: { cpf },
+    FilterExpression: 'cpf = :cpf',
+    ExpressionAttributeValues: {
+      ':cpf': cpf,
+    },
   };
 
-  const result = await dynamo.get(params).promise();
-  return result.Item;
+  const result = await dynamo.scan(params).promise();
+  return result.Items[0];
 }
