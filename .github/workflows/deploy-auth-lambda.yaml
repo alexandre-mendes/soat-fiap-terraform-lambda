@@ -68,40 +68,40 @@ jobs:
       - name: Zip Lambda authenticator
         working-directory: lambda/authenticator
         run: |
-          zip -r ../../terraform/authenticator/lambda-authenticator.zip .
+          zip -r ../../terraform/lambda-authenticator.zip .
 
       - name: Zip Lambda authorizer
         working-directory: lambda/authorizer
         run: |
-          zip -r ../../terraform/authenticator/lambda-authorizer.zip .
+          zip -r ../../terraform/lambda-authorizer.zip .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Init Terraform
-        working-directory: terraform/authenticator
+        working-directory: terraform
         run: terraform init
 
       - name: Terraform Format Check
-        working-directory: terraform/authenticator
+        working-directory: terraform
         run: terraform fmt -check
         env:
           TF_VAR_load-balancer-id: ${{ env.LB_ID }}
 
       - name: Terraform Validate
-        working-directory: terraform/authenticator
+        working-directory: terraform
         run: terraform validate
         env:
           TF_VAR_load-balancer-id: ${{ env.LB_ID }}
 
       - name: Terraform Plan
-        working-directory: terraform/authenticator
+        working-directory: terraform
         run: terraform plan -out=tfplan
         env:
           TF_VAR_load-balancer-id: ${{ env.LB_ID }}
 
       - name: Apply Terraform
-        working-directory: terraform/authenticator
+        working-directory: terraform
         run: terraform apply -auto-approve
         env:
           TF_VAR_load-balancer-id: ${{ env.LB_ID }}
