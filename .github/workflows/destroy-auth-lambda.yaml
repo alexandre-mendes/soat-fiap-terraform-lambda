@@ -27,25 +27,6 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name soat-cluster --region us-east-1
 
-      - name: Get Load Balancer ID from Service DNS
-        id: get-lb-id
-        run: |
-          FULL_HOST=$(kubectl get svc fastfood-api -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
-          LB_ID=$(echo "$FULL_HOST" | cut -d'-' -f1)
-          echo "Full DNS: $FULL_HOST"
-          echo "Extracted ID: $LB_ID"
-          echo "LB_ID=$LB_ID" >> $GITHUB_ENV
-
-      - name: Zip Lambda
-        working-directory: lambda/authenticator
-        run: |
-          zip -r ../../terraform/lambda-authenticator.zip .
-
-      - name: Zip Lambda
-        working-directory: lambda/authorizer
-        run: |
-          zip -r ../../terraform/lambda-authorizer.zip .
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -56,5 +37,3 @@ jobs:
       - name: Terraform Destroy
         working-directory: terraform
         run: terraform destroy -auto-approve
-        env:
-          TF_VAR_load-balancer-id: ${{ env.LB_ID }}
