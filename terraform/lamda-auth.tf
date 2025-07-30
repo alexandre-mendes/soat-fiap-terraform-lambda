@@ -94,8 +94,11 @@ resource "aws_apigatewayv2_integration" "customer_ms_integration" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
-  integration_uri        = "http://${data.kubernetes_service.customer_ms_service.status[0].load_balancer[0].ingress[0].hostname}/api/costumers/{proxy}"
+  integration_uri        = "http://${data.kubernetes_service.customer_ms_service.status[0].load_balancer[0].ingress[0].hostname}/"
   payload_format_version = "1.0"
+  request_parameters = {
+    "overwrite:path" = "$request.path"
+  }
 }
 
 # Rota para o Microsserviço de Cliente (/costumer)
@@ -112,8 +115,11 @@ resource "aws_apigatewayv2_integration" "order_ms_integration" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
-  integration_uri        = "http://${data.kubernetes_service.order_ms_service.status[0].load_balancer[0].ingress[0].hostname}/api/orders/{proxy}"
+  integration_uri        = "http://${data.kubernetes_service.order_ms_service.status[0].load_balancer[0].ingress[0].hostname}/"
   payload_format_version = "1.0"
+  request_parameters = {
+    "overwrite:path" = "$request.path"
+  }
 }
 
 # Rota para o Microsserviço de Pedidos (/order)
@@ -130,8 +136,11 @@ resource "aws_apigatewayv2_integration" "product_ms_integration" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
-  integration_uri        = "http://${data.kubernetes_service.product_ms_service.status[0].load_balancer[0].ingress[0].hostname}/api/products/{proxy}"
+  integration_uri        = "http://${data.kubernetes_service.product_ms_service.status[0].load_balancer[0].ingress[0].hostname}/"
   payload_format_version = "1.0"
+  request_parameters = {
+    "overwrite:path" = "$request.path"
+  }
 }
 
 # Rota para o Microsserviço de Produto (/product)
