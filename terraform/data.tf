@@ -4,7 +4,7 @@ data "aws_vpc" "vpc" {
 
 data "aws_subnets" "subnets" {
   filter {
-    name   = "vpc-id"
+    name  = "vpc-id"
     values = [data.aws_vpc.vpc.id]
   }
 }
@@ -15,16 +15,28 @@ data "aws_subnet" "subnet" {
 }
 
 data "aws_security_group" "vpc_link_sg" {
-  name   = "SG-${var.project_name}"
-  vpc_id = ""
+  name  = "SG-${var.project_name}"
+  vpc_id = data.aws_vpc.vpc.id
 }
 
-data "aws_lb" "fastfood_nlb" {
-  name = var.load-balancer-id
+
+data "kubernetes_service" "customer_ms_service" {
+  metadata {
+    name      = "soat-fiap-costumer-application-ms" 
+    namespace = "default"
+  }
 }
 
-data "aws_lb_listener" "fastfood_nlb_listener" {
-  load_balancer_arn = data.aws_lb.fastfood_nlb.arn
-  port              = 80
+data "kubernetes_service" "order_ms_service" {
+  metadata {
+    name      = "soat-fiap-order-application-ms" 
+    namespace = "default" 
+  }
 }
 
+data "kubernetes_service" "product_ms_service" {
+  metadata {
+    name      = "soat-fiap-product-application-ms" 
+    namespace = "default" 
+  }
+}

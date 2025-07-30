@@ -19,8 +19,8 @@ resource "aws_apigatewayv2_api" "http_api" {
   protocol_type = "HTTP"
 }
 
-resource "aws_lambda_permission" "apigw_invoke" {
-  statement_id  = "AllowAPIGatewayInvoke"
+resource "aws_lambda_permission" "apigw_invoke_authenticator" {
+  statement_id  = "AllowAPIGatewayInvokeAuthenticator"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.authenticator_lambda.arn
   principal     = "apigateway.amazonaws.com"
@@ -51,7 +51,6 @@ output "auth_api_url" {
   value = aws_apigatewayv2_api.http_api.api_endpoint
 }
 
-
 # authorizer
 
 resource "aws_lambda_function" "authorizer_lambda" {
@@ -69,6 +68,15 @@ resource "aws_lambda_function" "authorizer_lambda" {
   }
 }
 
+# PERMISSÃO PARA O API GATEWAY INVOCAR A LAMBDA AUTHORIZER
+resource "aws_lambda_permission" "apigw_invoke_authorizer" {
+  statement_id  = "AllowAPIGatewayInvokeAuthorizer"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.authorizer_lambda.arn
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
+
 resource "aws_apigatewayv2_authorizer" "lambda_authorizer" {
   name                              = "LambdaJWTAuthorizer"
   api_id                            = aws_apigatewayv2_api.http_api.id
@@ -80,29 +88,57 @@ resource "aws_apigatewayv2_authorizer" "lambda_authorizer" {
   authorizer_result_ttl_in_seconds  = 0
 }
 
-resource "aws_apigatewayv2_vpc_link" "fastfood_vpc_link" {
-  name = "fastfood-vpc-link"
 
-  subnet_ids = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.aws_region}e"]
-
-  security_group_ids = [data.aws_security_group.vpc_link_sg.id]
-}
-
-resource "aws_apigatewayv2_integration" "fastfood_integration" {
+# Integração para o Microsserviço de Cliente
+resource "aws_apigatewayv2_integration" "customer_ms_integration" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
-  integration_uri        = data.aws_lb_listener.fastfood_nlb_listener.arn
-  connection_type        = "VPC_LINK"
-  connection_id          = aws_apigatewayv2_vpc_link.fastfood_vpc_link.id
+  integration_uri        = "http://${data.kubernetes_service.customer_ms_service.status[0].load_balancer[0].ingress[0].hostname}/{proxy}"
   payload_format_version = "1.0"
 }
 
-
-resource "aws_apigatewayv2_route" "fastfood_route" {
+# Rota para o Microsserviço de Cliente (/costumer)
+resource "aws_apigatewayv2_route" "customer_ms_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /{proxy+}"
-  target             = "integrations/${aws_apigatewayv2_integration.fastfood_integration.id}"
+  route_key          = "ANY /api/costumer/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.customer_ms_integration.id}"
+  authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
+  authorization_type = "CUSTOM"
+}
+
+# Integração para o Microsserviço de Pedidos
+resource "aws_apigatewayv2_integration" "order_ms_integration" {
+  api_id                 = aws_apigatewayv2_api.http_api.id
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "ANY"
+  integration_uri        = "http://${data.kubernetes_service.order_ms_service.status[0].load_balancer[0].ingress[0].hostname}/{proxy}"
+  payload_format_version = "1.0"
+}
+
+# Rota para o Microsserviço de Pedidos (/order)
+resource "aws_apigatewayv2_route" "order_ms_route" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = "ANY /api/order/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.order_ms_integration.id}"
+  authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
+  authorization_type = "CUSTOM"
+}
+
+# Integração para o Microsserviço de Produto
+resource "aws_apigatewayv2_integration" "product_ms_integration" {
+  api_id                 = aws_apigatewayv2_api.http_api.id
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "ANY"
+  integration_uri        = "http://${data.kubernetes_service.product_ms_service.status[0].load_balancer[0].ingress[0].hostname}/{proxy}"
+  payload_format_version = "1.0"
+}
+
+# Rota para o Microsserviço de Produto (/product)
+resource "aws_apigatewayv2_route" "product_ms_route" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = "ANY /api/product/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.product_ms_integration.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
   authorization_type = "CUSTOM"
 }
