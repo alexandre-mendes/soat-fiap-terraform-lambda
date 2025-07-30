@@ -10,12 +10,6 @@ variable "clients_table_name" {
   default     = "clientes"
 }
 
-variable "existing_lambda_role_arn" {
-  type        = string
-  description = "ARN da role já existente com permissões para DynamoDB e execução de Lambda"
-  default     = "arn:aws:iam::590422439565:role/LabRole"
-}
-
 variable "aws_region" {
   default = "us-east-1"
 }

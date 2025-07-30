@@ -4,7 +4,7 @@ resource "aws_lambda_function" "authenticator_lambda" {
   handler          = "index.handler"
   runtime          = "nodejs18.x"
   source_code_hash = filebase64sha256("${path.module}/lambda-authenticator.zip")
-  role             = var.existing_lambda_role_arn
+  role             = aws_iam_role.lambda_exec_role.arn
 
   environment {
     variables = {
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "authorizer_lambda" {
   handler          = "index.handler"
   runtime          = "nodejs18.x"
   source_code_hash = filebase64sha256("${path.module}/lambda-authorizer.zip")
-  role             = var.existing_lambda_role_arn
+  role             = aws_iam_role.lambda_exec_role.arn
 
   environment {
     variables = {
