@@ -4,7 +4,7 @@ resource "aws_lambda_function" "authenticator_lambda" {
   handler          = "index.handler"
   runtime          = "nodejs18.x"
   source_code_hash = filebase64sha256("${path.module}/lambda-authenticator.zip")
-  role             = aws_iam_role.lambda_exec_role.arn
+  role             = var.existing_lambda_role_arn
 
   environment {
     variables = {
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "authorizer_lambda" {
   handler          = "index.handler"
   runtime          = "nodejs18.x"
   source_code_hash = filebase64sha256("${path.module}/lambda-authorizer.zip")
-  role             = aws_iam_role.lambda_exec_role.arn
+  role             = var.existing_lambda_role_arn
 
   environment {
     variables = {
@@ -137,7 +137,7 @@ resource "aws_apigatewayv2_integration" "product_ms_integration" {
 # Rota para o Microsserviço de Produto (/product)
 resource "aws_apigatewayv2_route" "product_ms_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /api/product/{proxy+}"
+  route_key          = "ANY /api/product/{proxy+}" 
   target             = "integrations/${aws_apigatewayv2_integration.product_ms_integration.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
   authorization_type = "CUSTOM"
