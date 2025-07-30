@@ -1,5 +1,3 @@
-# data.tf
-
 data "aws_vpc" "vpc" {
   id = "vpc-064f34389d4223b02"
 }
