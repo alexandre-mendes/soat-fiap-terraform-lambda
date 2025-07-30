@@ -1,5 +1,7 @@
+# data.tf
+
 data "aws_vpc" "vpc" {
-  cidr_block = "172.31.0.0/16"
+  id = "vpc-064f34389d4223b02"
 }
 
 data "aws_subnets" "subnets" {
@@ -19,24 +21,23 @@ data "aws_security_group" "vpc_link_sg" {
   vpc_id = data.aws_vpc.vpc.id
 }
 
-
 data "kubernetes_service" "customer_ms_service" {
   metadata {
-    name      = "soat-fiap-costumer-application-ms" 
+    name      = "soat-fiap-costumer-application-ms"
     namespace = "default"
   }
 }
 
 data "kubernetes_service" "order_ms_service" {
   metadata {
-    name      = "soat-fiap-order-application-ms" 
-    namespace = "default" 
+    name      = "soat-fiap-order-application-ms"
+    namespace = "default"
   }
 }
 
 data "kubernetes_service" "product_ms_service" {
   metadata {
-    name      = "soat-fiap-product-application-ms" 
-    namespace = "default" 
+    name      = "soat-fiap-product-application-ms"
+    namespace = "default"
   }
 }
