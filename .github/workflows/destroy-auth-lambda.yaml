@@ -27,6 +27,16 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name soat-cluster --region us-east-1
 
+      - name: Zip Lambda
+        working-directory: lambda/authenticator
+        run: |
+          zip -r ../../terraform/lambda-authenticator.zip .
+
+      - name: Zip Lambda
+        working-directory: lambda/authorizer
+        run: |
+          zip -r ../../terraform/lambda-authorizer.zip .
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
