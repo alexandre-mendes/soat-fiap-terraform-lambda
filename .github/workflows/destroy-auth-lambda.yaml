@@ -10,7 +10,7 @@ jobs:
     env:
       AWS_REGION: us-east-1
       TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
-      TF_VAR_clients_table_name: "client"
+      TF_VAR_clients_table_name: "costumer"
 
     steps:
       - name: Checkout

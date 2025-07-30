@@ -101,7 +101,7 @@ resource "aws_apigatewayv2_integration" "customer_ms_integration" {
 # Rota para o Microsserviço de Cliente (/costumer)
 resource "aws_apigatewayv2_route" "customer_ms_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /api/costumer/{proxy+}"
+  route_key          = "ANY /api/costumers/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.customer_ms_integration.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
   authorization_type = "CUSTOM"
@@ -119,7 +119,7 @@ resource "aws_apigatewayv2_integration" "order_ms_integration" {
 # Rota para o Microsserviço de Pedidos (/order)
 resource "aws_apigatewayv2_route" "order_ms_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /api/order/{proxy+}"
+  route_key          = "ANY /api/orders/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.order_ms_integration.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
   authorization_type = "CUSTOM"
@@ -137,7 +137,7 @@ resource "aws_apigatewayv2_integration" "product_ms_integration" {
 # Rota para o Microsserviço de Produto (/product)
 resource "aws_apigatewayv2_route" "product_ms_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /api/product/{proxy+}" 
+  route_key          = "ANY /api/products/{proxy+}" 
   target             = "integrations/${aws_apigatewayv2_integration.product_ms_integration.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
   authorization_type = "CUSTOM"
